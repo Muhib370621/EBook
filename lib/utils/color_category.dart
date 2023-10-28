@@ -13,6 +13,7 @@ Color grey10 = bgColor;
 Color grey30 = '#D7D7D7'.toColor();
 Color lightGrey = '#F8F8F8'.toColor();
 Color indicatorColor = '#D6D8D8'.toColor();
+Color purple = Color(0xff41028f);
 
 
 extension ColorExtension on String {

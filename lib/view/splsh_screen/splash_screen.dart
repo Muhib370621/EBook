@@ -110,7 +110,7 @@ class _SplashScreenState extends State<SplashScreen>
     return Obx(() => isData.value?GetBuilder<MoreTabController>(
       init: MoreTabController(),
       builder: (moreTabController) => Scaffold(
-        backgroundColor: Get.isDarkMode ? maximumOrange : regularWhite,
+        backgroundColor: Get.isDarkMode ? maximumOrange : purple,
         body: SafeArea(
           child: getDefaultWidget(Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -120,8 +120,8 @@ class _SplashScreenState extends State<SplashScreen>
                 scale: _animation,
                 child: getAssetImage(
                     Get.isDarkMode
-                        ? "dark_theme_splash_logo.png"
-                        : "splash_logo.png",
+                        ? "ebookNewLogo.jpeg"
+                        : "ebookNewLogo.jpeg",
                     width: 170.56.h,
                     height: 191.h),
               ),

@@ -122,6 +122,7 @@ class _ReadSavedBookScreenState extends State<ReadSavedBookScreen> {
                         //     ],
                         //   ).paddingSymmetric(vertical: 20.h, horizontal: 20.h),
                         // ),
+                        Text(widget.filePath.toString()),
                       ],
                     ),
                   ),
