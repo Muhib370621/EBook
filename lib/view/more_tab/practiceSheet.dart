@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:ebook_app/controller/controller.dart';
 import 'package:ebook_app/utils/constantWidget.dart';
+import 'package:ebook_app/view/more_tab/vocabTab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -21,7 +22,6 @@ class PracticeSheet extends StatefulWidget {
 }
 
 class _PracticeSheetState extends State<PracticeSheet> {
-
   // List<T> findMissingElements<T>(List<T> list1, List<T> list2) {
   //   List<T> missingElements = [];
   //
@@ -61,6 +61,7 @@ class _PracticeSheetState extends State<PracticeSheet> {
   // }
 
   final TextEditingController practiceText = TextEditingController();
+
   // final TextEditingController recognizedText = TextEditingController();
   FlutterTts flutterTts = FlutterTts();
 
@@ -115,6 +116,8 @@ class _PracticeSheetState extends State<PracticeSheet> {
     _speechEnabled = await _speechToText.initialize();
   }
 
+  List<String> mistakesList = [];
+
   /// Each time to start a speech recognition session
   void _startListening() async {
     // recognizedText.clear();
@@ -139,6 +142,7 @@ class _PracticeSheetState extends State<PracticeSheet> {
     setState(() {});
     // highlightDifference(practiceText.text, recognizedText.text);
   }
+
   String capitalizeFirstWord(String text) {
     if (text.isNotEmpty) {
       List<String> words = text.split(" ");
@@ -149,10 +153,11 @@ class _PracticeSheetState extends State<PracticeSheet> {
     }
     return text;
   }
+
   /// This is the callback that the SpeechToText plugin calls when
   /// the platform returns recognized words.
   void _onSpeechResult(SpeechRecognitionResult result) {
-    _lastWords="";
+    _lastWords = "";
     // result.recognizedWords.
     setState(() {
       // recognizedText.clear();
@@ -164,17 +169,24 @@ class _PracticeSheetState extends State<PracticeSheet> {
     });
     log("last words" + _lastWords);
   }
+
   List<InlineSpan> highlightDifferences(String text1, String text2) {
+    text1 = text1.replaceAll(RegExp(r'[^\w\s]'), '').toLowerCase();
+    text2 = text2.replaceAll(RegExp(r'[^\w\s]'), '').toLowerCase();
     List<String> words1 = text1.split(" ");
     List<String> words2 = text2.split(" ");
 
     List<InlineSpan> formattedText = [];
+    mistakesList.clear();
 
     for (String word1 in words1) {
       if (words2.contains(word1)) {
-        formattedText.add(TextSpan(text: word1, style: TextStyle(color: Colors.black)));
+        formattedText
+            .add(TextSpan(text: word1, style: TextStyle(color: Colors.black)));
       } else {
-        formattedText.add(TextSpan(text: word1, style: TextStyle(color: Colors.red)));
+        formattedText
+            .add(TextSpan(text: word1, style: TextStyle(color: Colors.red)));
+        mistakesList.add(word1);
       }
       formattedText.add(TextSpan(text: " "));
     }
@@ -184,7 +196,8 @@ class _PracticeSheetState extends State<PracticeSheet> {
 
   @override
   Widget build(BuildContext context) {
-   List<InlineSpan> highLightText = highlightDifferences(practiceText.text, _lastWords);
+    List<InlineSpan> highLightText =
+        highlightDifferences(practiceText.text, _lastWords);
 
     return Scaffold(
         body: SafeArea(
@@ -199,8 +212,7 @@ class _PracticeSheetState extends State<PracticeSheet> {
                   leftFunction: () {
                     // backClick()
                     Get.back();
-                    HomeMainScreenController mainScreenController =
-                        Get.find();
+                    HomeMainScreenController mainScreenController = Get.find();
                     mainScreenController.onChange(2.obs);
                   },
                   givecolor: context.theme.focusColor,
@@ -227,7 +239,8 @@ class _PracticeSheetState extends State<PracticeSheet> {
                               padding: const EdgeInsets.all(12.0),
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: context.theme.primaryColor, // Border color
+                                  color: context.theme.primaryColor,
+                                  // Border color
                                   width: 1.0, // Border width
                                 ),
                                 borderRadius: BorderRadius.all(
@@ -266,7 +279,7 @@ class _PracticeSheetState extends State<PracticeSheet> {
                       ),
                       getVerSpace(20.h),
                       Visibility(
-                        visible: _lastWords!="",
+                        visible: _lastWords != "",
                         child: Padding(
                           padding: EdgeInsets.all(12.0),
                           child: Column(
@@ -285,7 +298,8 @@ class _PracticeSheetState extends State<PracticeSheet> {
                                 padding: const EdgeInsets.all(12.0),
                                 decoration: BoxDecoration(
                                   border: Border.all(
-                                    color: context.theme.primaryColor, // Border color
+                                    color: context.theme.primaryColor,
+                                    // Border color
                                     width: 1.0, // Border width
                                   ),
                                   borderRadius: BorderRadius.all(
@@ -299,7 +313,7 @@ class _PracticeSheetState extends State<PracticeSheet> {
                       ),
                       getVerSpace(20.h),
                       Visibility(
-                        visible: practiceText.text!="" && _lastWords!="",
+                        visible: practiceText.text != "" && _lastWords != "",
                         child: Align(
                           alignment: Alignment.topLeft,
                           child: Padding(
@@ -307,19 +321,55 @@ class _PracticeSheetState extends State<PracticeSheet> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  "Mistakes",
-                                  style: TextStyle(
-                                    fontSize: 22.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Mistakes",
+                                      style: TextStyle(
+                                        fontSize: 22.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        Get.to(() =>
+                                            VocabTab(mistakes: mistakesList));
+                                      },
+                                      child: Container(
+                                        height: 0.04.sh,
+                                        width: 0.4.sw,
+                                        decoration: BoxDecoration(
+                                          color: Colors.orange.shade500,
+                                          border: Border.all(
+                                              color: Colors.black, width: 2.w),
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(
+                                              15.sp,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "Add to Vocab",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18.sp,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 ),
                                 15.h.verticalSpace,
                                 Container(
                                   padding: const EdgeInsets.all(12.0),
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                      color: context.theme.primaryColor, // Border color
+                                      color: context.theme.primaryColor,
+                                      // Border color
                                       width: 1.0, // Border width
                                     ),
                                     borderRadius: BorderRadius.all(
@@ -346,7 +396,6 @@ class _PracticeSheetState extends State<PracticeSheet> {
                                     ],
                                   ),
                                 )
-
                               ],
                             ),
                           ),

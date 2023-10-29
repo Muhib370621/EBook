@@ -7,13 +7,17 @@ import 'package:ebook_app/ads/AdsFile.dart';
 import 'package:ebook_app/datafile/firebase_data/firebasedata.dart';
 import 'package:ebook_app/main.dart';
 import 'package:ebook_app/utils/pref_data.dart';
+import 'package:ebook_app/view/more_tab/notesSheet.dart';
 import 'package:ebook_app/view/more_tab/practiceSheet.dart';
+import 'package:ebook_app/view/more_tab/translateScreen.dart';
+import 'package:ebook_app/view/more_tab/vocabTab.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
 import 'package:internet_file/internet_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -226,13 +230,14 @@ class _ReadBookScreenState extends State<ReadBookScreen> {
   @override
   void dispose() {
     IsolateNameServer.removePortNameMapping('downloader_send_port');
+    _pdfViewerController.dispose();
     super.dispose();
   }
 
   Uint8List? _pdfBytes;
 
   OverlayEntry? _overlayEntry;
-  final PdfViewerController _pdfViewerController=PdfViewerController();
+  final PdfViewerController _pdfViewerController = PdfViewerController();
 
   void _showContextMenu(
       BuildContext context, PdfTextSelectionChangedDetails details) {
@@ -248,7 +253,7 @@ class _ReadBookScreenState extends State<ReadBookScreen> {
                   style: TextStyle(fontSize: 17, color: Colors.black)),
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: details.selectedText!));
-                _pdfViewerController!.clearSelection();
+                _pdfViewerController.clearSelection();
               },
               // backgroundColor: Colors.white
               style: ButtonStyle(
@@ -266,10 +271,11 @@ class _ReadBookScreenState extends State<ReadBookScreen> {
               child: Text('Go to Practice',
                   style: TextStyle(fontSize: 17, color: Colors.black)),
               onPressed: () {
-                Clipboard.setData(ClipboardData(text: details.selectedText!));
+                _pdfViewerController.clearSelection();
+
+                // Clipboard.setData(ClipboardData(text: details.selectedText!));
                 Get.to(
                     () => PracticeSheet(practiceString: details.selectedText!));
-                _pdfViewerController!.clearSelection();
               },
               // backgroundColor: Colors.white
               style: ButtonStyle(
@@ -330,6 +336,9 @@ class _ReadBookScreenState extends State<ReadBookScreen> {
   }
 
   RxBool isPdfLoad = false.obs;
+  RxBool isOverlayed = false.obs;
+  RxString selectedText = "".obs;
+  RxString selectedDropDownValue = "".obs;
 
   @override
   Widget build(BuildContext context) {
@@ -348,6 +357,13 @@ class _ReadBookScreenState extends State<ReadBookScreen> {
     // File('output.pdf').writeAsBytes(await document.save());
     //
     // document.dispose();
+    FlutterTts flutterTts = FlutterTts();
+
+    void speak(String textToBeSpeeched) async {
+      await flutterTts.setLanguage("en-US");
+      await flutterTts.setPitch(1.0); // Adjust pitch if needed
+      await flutterTts.speak(textToBeSpeeched);
+    }
 
     return WillPopScope(
       onWillPop: () async {
@@ -414,6 +430,89 @@ class _ReadBookScreenState extends State<ReadBookScreen> {
                       ],
                     ),
                   ),
+
+                  Obx(() {
+                    return Visibility(
+                        visible: isOverlayed.value,
+                        child: Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  _pdfViewerController.clearSelection();
+                                  // Clipboard.setData(ClipboardData(text: details.selectedText!));
+                                  Get.to(
+                                    () => TranslateScreen(
+                                      stringToBeTranslated: selectedText.value,
+                                    ),
+                                  );
+                                },
+                                icon: Icon(Icons.translate)),
+                            IconButton(
+                                onPressed: () {
+                                  speak(selectedText.value);
+                                },
+                                icon: Icon(Icons.volume_up_sharp)),
+                            IconButton(
+                                onPressed: () {
+                                  RenderBox renderBox =
+                                      context.findRenderObject() as RenderBox;
+                                  showMenu(
+                                    context: context,
+                                    position: RelativeRect.fromLTRB(
+                                      1,
+                                      0,
+                                      0,
+                                      0, // Adjust the value as needed
+                                    ),
+                                    items: [
+                                      PopupMenuItem(
+                                        child: Text('Vocab Sheet'),
+                                        value: 'Vocab Sheet',
+                                        onTap: () {},
+                                      ),
+                                      PopupMenuItem(
+                                        child: Text('Practice Sheet'),
+                                        value: 'Practice Sheet',
+                                      ),
+                                      PopupMenuItem(
+                                        child: Text('Note Pad'),
+                                        value: 'Note Pad',
+                                        onTap: () {},
+                                      ),
+                                    ],
+                                    elevation: 8,
+                                  ).then((value) {
+                                    if (value != null) {
+                                      if (value == "Practice Sheet") {
+                                        _pdfViewerController.clearSelection();
+                                        // Clipboard.setData(ClipboardData(text: details.selectedText!));
+                                        Get.to(() => PracticeSheet(
+                                            practiceString:
+                                                selectedText.value));
+                                      }
+                                      if (value == "Note Pad") {
+                                        _pdfViewerController.clearSelection();
+                                        // Clipboard.setData(ClipboardData(text: details.selectedText!));
+                                        Get.to(() => NotesSheet());
+                                      }
+                                      if (value == "Vocab Sheet") {
+                                        _pdfViewerController.clearSelection();
+                                        // Clipboard.setData(ClipboardData(text: details.selectedText!));
+                                        Get.to(() => VocabTab(
+                                              mistakes: [],
+                                            ));
+                                      }
+                                      // Handle the selected option
+                                      // setState(() {
+                                      selectedDropDownValue.value = value;
+                                      // });
+                                    }
+                                  });
+                                },
+                                icon: Icon(Icons.more_vert))
+                          ],
+                        ));
+                  }),
 
                   GestureDetector(
                       onTap: () {
@@ -809,11 +908,18 @@ class _ReadBookScreenState extends State<ReadBookScreen> {
                                                   details) {
                                             if (details.selectedText == null &&
                                                 _overlayEntry != null) {
+                                              isOverlayed.value = false;
                                               _overlayEntry!.remove();
                                               _overlayEntry = null;
+                                              // setState(() {
+                                              //
+                                              // });
                                             } else if (details.selectedText !=
                                                     null &&
                                                 _overlayEntry == null) {
+                                              isOverlayed.value = true;
+                                              selectedText.value =
+                                                  details.selectedText!;
                                               _showContextMenu(
                                                   context, details);
                                             }
