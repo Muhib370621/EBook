@@ -103,7 +103,9 @@ class _PracticeSheetState extends State<PracticeSheet> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    practiceText.text = widget.practiceString;
+    // widget.p
+    practiceText.text = widget.practiceString.replaceAll(RegExp(r'\s+'), ' ');
+    ;
     // highlightDifference("I am good","I am gut");
     listenForPermissions();
     if (!_speechEnabled) {

@@ -8,14 +8,15 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.BA"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.BA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <queries>
         <intent>
             <action android:name="android.speech.RecognitionService" />
@@ -34,7 +35,7 @@
     <application
         android:requestLegacyExternalStorage="true"
         android:enableOnBackInvokedCallback="true"
-        android:label="ebook_app"
+        android:label="Bookup Redi"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
@@ -45,12 +46,12 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-3940256099942544~3347511713" />
 
 
         <meta-data
             android:name="com.google.android.gms.ads.AD_MANAGER_APP"
-            android:value="true"/>
+            android:value="true" />
 
         <provider
             android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
@@ -59,32 +60,32 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
-       <!-- Begin FlutterDownloader customization -->
-       <!-- disable default Initializer -->
-       <provider
-           android:name="androidx.startup.InitializationProvider"
-           android:authorities="${applicationId}.androidx-startup"
-           android:exported="false"
-           tools:node="merge">
-           <meta-data
-               android:name="androidx.work.WorkManagerInitializer"
-               android:value="androidx.startup"
-               tools:node="remove" />
-       </provider>
+        <!-- Begin FlutterDownloader customization -->
+        <!-- disable default Initializer -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
 
-       <!-- declare customized Initializer -->
-       <provider
-           android:name="vn.hunghd.flutterdownloader.FlutterDownloaderInitializer"
-           android:authorities="${applicationId}.flutter-downloader-init"
-           android:exported="false">
-           <!-- changes this number to configure the maximum number of concurrent tasks -->
-           <meta-data
-               android:name="vn.hunghd.flutterdownloader.MAX_CONCURRENT_TASKS"
-               android:value="5" />
-       </provider>
-       <!-- End FlutterDownloader customization -->
+        <!-- declare customized Initializer -->
+        <provider
+            android:name="vn.hunghd.flutterdownloader.FlutterDownloaderInitializer"
+            android:authorities="${applicationId}.flutter-downloader-init"
+            android:exported="false">
+            <!-- changes this number to configure the maximum number of concurrent tasks -->
+            <meta-data
+                android:name="vn.hunghd.flutterdownloader.MAX_CONCURRENT_TASKS"
+                android:value="5" />
+        </provider>
+        <!-- End FlutterDownloader customization -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -100,23 +101,23 @@
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="getsocial.intent.action.NOTIFICATION_RECEIVE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="getsocial.intent.action.NOTIFICATION_RECEIVE" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="FLUTTER_NOTIFICATION_CLICK" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
 
 

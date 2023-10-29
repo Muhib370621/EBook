@@ -488,7 +488,7 @@ class _ReadBookScreenState extends State<ReadBookScreen> {
                                         // Clipboard.setData(ClipboardData(text: details.selectedText!));
                                         Get.to(() => PracticeSheet(
                                             practiceString:
-                                                selectedText.value));
+                                                selectedText.value.trim()));
                                       }
                                       if (value == "Note Pad") {
                                         _pdfViewerController.clearSelection();
